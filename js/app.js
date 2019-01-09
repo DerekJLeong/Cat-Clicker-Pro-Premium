@@ -1,6 +1,7 @@
 // - - - - DATA - - - - //
 let data = {
     currentCat: null,
+    adminShow: false,
     cats: [
         {
             clickCount : 0,
@@ -41,6 +42,8 @@ let octo = {
         //iniialize views
         listView.init();
         catView.init();
+        adminView.init();
+        adminView.hide();
     },
 
     getCurrentCat: function () {
@@ -59,6 +62,31 @@ let octo = {
         data.currentCat.clickCount++;
         //render to display new count number
         catView.render();
+    },
+
+    showForm: function() {
+        if (data.adminShow === false) {
+            data.adminShow = true;
+            adminView.show();
+        }
+        else if (data.adminShow ===true) {
+            data.adminShow = false;
+            adminView.hide();
+        }
+    },
+
+    cancelForm: function() {
+        adminView.hide();
+    },
+
+    saveForm: function() {
+        data.currentCat.name = adminView.formName.value;
+        data.currentCat.imgSrc = adminView.formSource.value;
+        data.currentCat.clickCount = adminView.formClicks.value;
+        
+        catView.render();
+        listView.render();
+        adminView.hide();
     }
 };
 
@@ -126,6 +154,50 @@ let listView = {
 
             this.displayList.appendChild(catElem);
         }
+    }
+};
+
+let adminView = {
+    init: function() {
+        let container = document.getElementById('form-container');
+
+        this.adminButton = document.getElementById('admin-button');
+        this.formName = document.getElementById('form-name');
+        this.formSource = document.getElementById('form-source');
+        this.formClicks = document.getElementById('form-clicks');
+        this.formCancel = document.getElementById('form-cancel');
+        this.formSave = document.getElementById('form-save');
+
+        this.adminButton.addEventListener('click', function(){
+            octo.showForm();
+        });
+        
+        this.formCancel.addEventListener('click', function(){
+            octo.cancelForm();
+        });
+        
+        this.formSave.addEventListener('click', function(){
+            octo.saveForm();
+        });
+
+        this.render();
+    },
+
+    render: function() {
+        let currentCat = octo.getCurrentCat();
+        
+        this.formName.value = currentCat.name;
+        this.formSource.value = currentCat.imgSrc;
+        this.formClicks.value = currentCat.clickCount;
+    },
+
+    show: function() {
+        this.render();
+        container.style.display = 'block';
+    },
+
+    hide: function() {
+        container.style.display = 'none';
     }
 };
 
